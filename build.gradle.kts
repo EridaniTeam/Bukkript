@@ -16,8 +16,8 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
-    implementation("club.eridani.bukkit:kotlin-api:0.0.3")
+    compileOnly(kotlin("stdlib"))
+    compileOnly("club.eridani.bukkit:kotlin-api:0.0.3")
     compileOnly("org.spigotmc:spigot-api:$bukkitVersion")
 
     implementation(kotlin("scripting-jvm"))
