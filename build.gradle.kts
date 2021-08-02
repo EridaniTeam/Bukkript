@@ -20,9 +20,11 @@ dependencies {
     compileOnly("club.eridani.bukkit:kotlin-api:0.0.3")
     compileOnly("org.spigotmc:spigot-api:$bukkitVersion")
 
-    implementation(kotlin("scripting-jvm"))
+
+    implementation(kotlin("scripting-common"))
     implementation(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-compiler-embeddable"))
+    implementation(kotlin("scripting-jvm"))
     implementation(kotlin("scripting-dependencies"))
     implementation(kotlin("scripting-dependencies-maven"))
 }
@@ -34,4 +36,21 @@ bukkit {
     depend = listOf("KotlinMinecraftBukkit")
 
     description = "Bukkript Scripting."
+}
+
+tasks {
+    named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+        dependencies {
+            exclude(dependency(":kotlin-stdlib:"))
+            exclude(dependency(":kotlin-stdlib-common:"))
+            exclude(dependency(":kotlin-stdlib-jdk7:"))
+            exclude(dependency(":kotlin-stdlib-jdk8:"))
+            exclude(dependency(":kotlinx-coroutines-core:"))
+        }
+    }
+}
+
+tasks.create<Copy>("downloadLibs") {
+    from(configurations.runtimeClasspath.get())
+    into("libs")
 }

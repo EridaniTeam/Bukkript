@@ -12,19 +12,18 @@ import kotlin.script.experimental.api.*
 import kotlin.script.experimental.dependencies.*
 import kotlin.script.experimental.dependencies.impl.resolve
 import kotlin.script.experimental.dependencies.maven.MavenDependenciesResolver
-import kotlin.script.experimental.dependencies.resolveFromAnnotations
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.updateClasspath
 import kotlin.script.experimental.util.filterByAnnotationType
 
 fun resolveScriptStaticDependencies(
-    ctx: ScriptConfigurationRefinementContext
+    ctx: ScriptConfigurationRefinementContext,
 ): ResultWithDiagnostics<ScriptCompilationConfiguration> {
 
     val configuration = ctx.compilationConfiguration.with {
 
         // If spigot is not available at this time, this means that is server running at a server
-        if(!isPackageAvailable(SPIGOT_DEPENDENCY.fqnPackage)) {
+        if (!isPackageAvailable(SPIGOT_DEPENDENCY.fqnPackage)) {
 
             val scriptFile = ctx.script.finalFile
 
@@ -51,7 +50,7 @@ fun resolveScriptStaticDependencies(
                         .filter { it.isJar() }
 
                     for (jar in allPlugins + serverJar) {
-                        files += fileResolver.resolve(jar.absolutePath, mapOf()).valueOrNull()  ?: emptyList()
+                        files += fileResolver.resolve(jar.absolutePath, mapOf()).valueOrNull() ?: emptyList()
                     }
                 }
 
@@ -64,11 +63,12 @@ fun resolveScriptStaticDependencies(
 
                         for (artifact in artifacts) {
                             // Adding the dependency only in a plugin folder was not available
-                            if(pluginsFolder == null)
+                            if (pluginsFolder == null)
                                 files += mavenResolver.resolve(artifact, mapOf()).valueOrNull() ?: emptyList()
 
                             // Adding the source codes
-                            sources += mavenResolver.resolve(artifactAsSource(artifact), mapOf()).valueOrNull() ?: emptyList()
+                            sources += mavenResolver.resolve(artifactAsSource(artifact), mapOf()).valueOrNull()
+                                ?: emptyList()
                         }
                     }
                 }
@@ -89,12 +89,12 @@ fun resolveScriptStaticDependencies(
 
 data class ExternalDependencies(
     val compiled: Set<File>,
-    val sources: Set<File>
+    val sources: Set<File>,
 )
 
 fun resolveExternalDependencies(
     scriptSource: SourceCode,
-    annotations: List<Annotation>
+    annotations: List<Annotation>,
 ): ExternalDependencies {
 
     // If is running in the Server, use server internal server cache folder for the libraries
@@ -105,7 +105,7 @@ fun resolveExternalDependencies(
 
     // Checking where is spigot avaible, if not, is not running at the server
     // And should use sources.
-    if(!isPackageAvailable(SPIGOT_DEPENDENCY.fqnPackage)) {
+    if (!isPackageAvailable(SPIGOT_DEPENDENCY.fqnPackage)) {
         // Downloading sources for IntelliJ
         runBlocking {
             sources += mavenResolver.resolveSourceFromAnnotations(annotations).valueOrThrow()
@@ -122,7 +122,7 @@ fun resolveExternalDependencies(
 }
 
 private fun artifactAsSource(artifactsCoordinates: String): String {
-    return if(artifactsCoordinates.count { it == ':' } == 2) {
+    return if (artifactsCoordinates.count { it == ':' } == 2) {
         val lastColon = artifactsCoordinates.lastIndexOf(':')
         artifactsCoordinates.toMutableList().apply { addAll(lastColon, ":jar:sources".toList()) }.joinToString("")
     } else {
@@ -134,7 +134,7 @@ private fun artifactAsSource(artifactsCoordinates: String): String {
  * An extension function that configures repositories and resolves artifacts denoted by the [Repository] and [DependsOn] annotations
  */
 suspend fun ExternalDependenciesResolver.resolveSourceFromScriptSourceAnnotations(
-    annotations: Iterable<ScriptSourceAnnotation<*>>
+    annotations: Iterable<ScriptSourceAnnotation<*>>,
 ): ResultWithDiagnostics<List<File>> {
     val reports = mutableListOf<ScriptDiagnostic>()
     annotations.forEach { (annotation, locationWithId) ->
@@ -153,15 +153,19 @@ suspend fun ExternalDependenciesResolver.resolveSourceFromScriptSourceAnnotation
                         )
                 }
             }
-            is DependsOn -> {}
-            else -> return reports + makeFailureResult("Unknown annotation ${annotation.javaClass}", locationWithId = locationWithId)
+            is DependsOn -> {
+            }
+            else -> return reports + makeFailureResult("Unknown annotation ${annotation.javaClass}",
+                locationWithId = locationWithId)
         }
     }
 
     return reports + annotations.filterByAnnotationType<DependsOn>()
         .flatMapSuccess { (annotation, locationWithId) ->
             annotation.artifactsCoordinates.asIterable().flatMapSuccess { artifactCoordinates ->
-                resolve(artifactAsSource(artifactCoordinates), ExternalDependenciesResolver.Options.Empty, locationWithId)
+                resolve(artifactAsSource(artifactCoordinates),
+                    ExternalDependenciesResolver.Options.Empty,
+                    locationWithId)
             }
         }
 }
@@ -170,7 +174,7 @@ suspend fun ExternalDependenciesResolver.resolveSourceFromScriptSourceAnnotation
  * An extension function that configures repositories and resolves artifacts denoted by the [Repository] and [DependsOn] annotations
  */
 suspend fun ExternalDependenciesResolver.resolveSourceFromAnnotations(
-    annotations: Iterable<Annotation>
+    annotations: Iterable<Annotation>,
 ): ResultWithDiagnostics<List<File>> {
     val scriptSourceAnnotations = annotations.map { ScriptSourceAnnotation(it, null) }
     return resolveSourceFromScriptSourceAnnotations(scriptSourceAnnotations)
