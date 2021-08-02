@@ -75,11 +75,9 @@ val kotlinBukkitAPICoreImports = listOf(
 )
 
 
-//val bukkriptImports = listOf(
-//    "org.kotlinmc.bukkript.script.definition.annotation.*",
-//    "org.kotlinmc.bukkript.script.definition.api.*",
-//    "org.kotlinmc.bukkript.script.definition.api.architecture.*",
-//)
+val bukkriptImports = listOf(
+    "org.kotlinmc.bukkript.script.definition.api.*"
+)
 
 val kotlinImports = listOf(
     "kotlin.time.*",

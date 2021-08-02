@@ -23,7 +23,7 @@ fun BukkriptScript.command(
 }
 
 
-private fun BukkriptScript.unregisterOnDisable(it: CommandDSL) {
+fun BukkriptScript.unregisterOnDisable(it: CommandDSL) {
     onDisable {
         it.job.cancel()
         it.unregister()

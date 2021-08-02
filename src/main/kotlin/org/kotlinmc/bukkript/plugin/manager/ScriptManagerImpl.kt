@@ -10,6 +10,8 @@ import org.kotlinmc.bukkit.extensions.BukkitDispatchers
 import org.kotlinmc.bukkit.extensions.info
 import org.kotlinmc.bukkit.utils.now
 import org.kotlinmc.bukkript.plugin.*
+import org.kotlinmc.bukkript.plugin.manager.script.ScriptState
+import org.kotlinmc.bukkript.plugin.watcher.watchFolder
 import org.kotlinmc.bukkript.script.definition.BUKKRIPT_EXTENSION
 import org.kotlinmc.bukkript.script.definition.CACHE_FOLDER
 import org.kotlinmc.bukkript.script.definition.api.LogLevel
@@ -17,8 +19,6 @@ import org.kotlinmc.bukkript.script.definition.bukkriptNameRelative
 import org.kotlinmc.bukkript.script.definition.isBukkriptScript
 import org.kotlinmc.bukkript.script.host.compiler.BukkriptScriptCompilerImpl
 import org.kotlinmc.bukkript.script.host.loader.BukkriptScriptLoaderImpl
-import org.kotlinmc.bukkript.plugin.manager.script.ScriptState
-import org.kotlinmc.bukkript.plugin.watcher.watchFolder
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentSkipListSet
@@ -35,6 +35,14 @@ class ScriptManagerImpl(
 
     private val scriptDir by lazy { File(plugin.dataFolder, "scripts").apply { mkdirs() } }
     private val cacheDir by lazy { File(plugin.dataFolder, ".cache").apply { mkdirs() } }
+
+    init {
+        File(plugin.dataFolder.absolutePath + "/build.gradle.kts").apply {
+            if (!exists()) {
+                writeText(gradleFile)
+            }
+        }
+    }
 
     private val compiler by lazy { BukkriptScriptCompilerImpl(scriptDir, cacheDir) }
     private val loader by lazy {
@@ -79,7 +87,7 @@ class ScriptManagerImpl(
     override fun compile(scriptName: String): Job {
         var scriptState = scripts[scriptName]
 
-        // if the script is not avaiable yet, trying to discovery it
+        // if the script is not available yet, trying to discovery it
         if (scriptState == null) {
             discoveryScript(scriptName)
 

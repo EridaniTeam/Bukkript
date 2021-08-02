@@ -12,7 +12,7 @@ import kotlin.script.experimental.jvm.jvm
 
 class BukkriptScriptCompilationConfiguration : ScriptCompilationConfiguration({
     defaultImports(bukkitImports + kotlinBukkitAPICoreImports
-            + kotlinImports + javaImports + kotlinCoroutinesImports + scriptingImports
+            + kotlinImports + javaImports + kotlinCoroutinesImports + scriptingImports + bukkriptImports
     )
     jvm {
         dependenciesFromClassContext(BukkriptScriptCompilationConfiguration::class, wholeClasspath = true)

@@ -1,7 +1,10 @@
 package org.kotlinmc.bukkript.script.definition
 
 import org.kotlinmc.bukkit.architecture.KotlinPlugin
+import org.kotlinmc.bukkit.dsl.command.CommandBuilderBlock
+import org.kotlinmc.bukkit.dsl.command.command
 import org.kotlinmc.bukkript.script.definition.api.LogLevel
+import org.kotlinmc.bukkript.script.definition.api.unregisterOnDisable
 import org.kotlinmc.bukkript.script.definition.configuration.BukkriptScriptCompilationConfiguration
 import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript
@@ -30,5 +33,9 @@ abstract class BukkriptScript(
         _onDisableListeners.add(callback)
 
         return { _onDisableListeners.remove(callback) }
+    }
+
+    infix operator fun String.invoke(block: CommandBuilderBlock) = plugin.command(this, block = block).apply {
+        unregisterOnDisable(this)
     }
 }

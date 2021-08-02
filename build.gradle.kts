@@ -2,10 +2,14 @@ plugins {
     kotlin("jvm") version "1.5.21"
     id("net.minecrell.plugin-yml.bukkit") version "0.4.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
+    `maven-publish`
 }
 
+val bukkriptVersion = "0.0.5"
+
 group = "club.eridani"
-version = "0.0.1"
+version = bukkriptVersion
+
 
 val bukkitVersion = "1.8.8-R0.1-SNAPSHOT"
 
@@ -17,7 +21,7 @@ repositories {
 
 dependencies {
     compileOnly(kotlin("stdlib"))
-    compileOnly("club.eridani.bukkit:kotlin-api:0.0.3")
+    compileOnly("club.eridani.bukkit:kotlin-api:0.0.4")
     compileOnly("org.spigotmc:spigot-api:$bukkitVersion")
 
 
@@ -53,4 +57,26 @@ tasks {
 tasks.create<Copy>("downloadLibs") {
     from(configurations.runtimeClasspath.get())
     into("libs")
+}
+
+val sourceJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["kotlin"])
+            artifact(sourceJar.get())
+
+            groupId = "club.eridani.bukkit"
+            artifactId = "kotlin-script"
+            version = bukkriptVersion
+        }
+    }
+
+    repositories {
+        maven("file://${System.getProperty("user.home")}/kb_maven")
+    }
 }
