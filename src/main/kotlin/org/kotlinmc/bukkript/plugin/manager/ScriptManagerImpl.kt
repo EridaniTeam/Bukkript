@@ -39,6 +39,7 @@ class ScriptManagerImpl(
     init {
         File(plugin.dataFolder.absolutePath + "/build.gradle.kts").apply {
             if (!exists()) {
+                createNewFile()
                 writeText(gradleFile)
             }
         }
