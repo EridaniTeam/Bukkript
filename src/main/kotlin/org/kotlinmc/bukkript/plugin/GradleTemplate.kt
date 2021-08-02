@@ -1,7 +1,7 @@
 package org.kotlinmc.bukkript.plugin
 
 val kotlinVersion = "1.5.21"
-val kotlinScriptVersion = "0.0.6"
+val kotlinScriptVersion = "0.0.7"
 
 val gradleFile = "plugins {\n" +
         "    kotlin(\"jvm\") version \"$kotlinVersion\"\n" +

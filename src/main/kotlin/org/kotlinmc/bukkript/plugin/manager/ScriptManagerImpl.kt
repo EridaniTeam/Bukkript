@@ -27,6 +27,10 @@ class ScriptManagerImpl(
     override val plugin: BukkriptPlugin,
 ) : ScriptManager {
 
+    init {
+        plugin.dataFolder.mkdir()
+    }
+
     companion object {
         const val MINIMUM_MODIFY_TIME_TO_RECOMPILE_SECONDS = 1
     }
@@ -37,7 +41,7 @@ class ScriptManagerImpl(
     private val cacheDir by lazy { File(plugin.dataFolder, ".cache").apply { mkdirs() } }
 
     init {
-        File(plugin.dataFolder.absolutePath + "/build.gradle.kts").apply {
+        File(plugin.dataFolder, "build.gradle.kts").apply {
             if (!exists()) {
                 createNewFile()
                 writeText(gradleFile)

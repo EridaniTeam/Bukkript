@@ -5,7 +5,7 @@ plugins {
     `maven-publish`
 }
 
-val bukkriptVersion = "0.0.6"
+val bukkriptVersion = "0.0.7"
 
 group = "club.eridani"
 version = bukkriptVersion
