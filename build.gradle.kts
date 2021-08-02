@@ -31,7 +31,7 @@ dependencies {
 bukkit {
     name = "Bukkript"
     main = "org.kotlinmc.bukkript.plugin.BukkriptPlugin"
-    depend = listOf("KotlinBukkitAPI")
+    depend = listOf("KotlinMinecraftBukkit")
 
     description = "Bukkript Scripting."
 }
